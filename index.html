@@ -26,6 +26,11 @@
   <label><input type="checkbox" value="九州" checked> 九州</label>
 </div>
 
+<div style="margin-top:5px;">
+  <button id="select-all">全選択</button>
+  <button id="deselect-all">全解除</button>
+</div>
+
 <button id="draw-btn">抽選する</button>
 
 <div id="result" style="margin-top:10px; font-size: 18px;"></div>
@@ -64,11 +69,9 @@ fetch('https://code4fukui.github.io/localgovjp/localgovjp.json')
 function draw() {
   if (!cities.length) return;
 
-  // 選択地方
   const selectedRegions = Array.from(document.querySelectorAll('#region-selection input:checked'))
                                .map(el => el.value);
 
-  // 選択地方の市区町村のみ抽出
   const filteredCities = cities.filter(c => 
     selectedRegions.some(region => regionMap[region].includes(c.pref))
   );
@@ -78,19 +81,23 @@ function draw() {
     return;
   }
 
-  // ランダム抽選
   const choice = filteredCities[Math.floor(Math.random() * filteredCities.length)];
-
-  // 表示（市区町村にルビ）
   const displayHTML = `${choice.pref} <ruby>${choice.city}<rt>${choice.citykana}</rt></ruby>`;
   document.getElementById('result').innerHTML = `選ばれた旅先：<br><strong>${displayHTML}</strong>`;
 
-  // 地図移動とマーカー
   map.setView([choice.lat, choice.lng], 8);
   L.marker([choice.lat, choice.lng]).addTo(map);
 }
 
-// ボタンにイベント
+// 全選択 / 全解除
+document.getElementById('select-all').addEventListener('click', () => {
+  document.querySelectorAll('#region-selection input').forEach(cb => cb.checked = true);
+});
+document.getElementById('deselect-all').addEventListener('click', () => {
+  document.querySelectorAll('#region-selection input').forEach(cb => cb.checked = false);
+});
+
+// 抽選ボタン
 document.getElementById('draw-btn').addEventListener('click', draw);
 </script>
 
