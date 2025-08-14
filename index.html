@@ -9,7 +9,9 @@
     body { font-family: sans-serif; text-align: center; margin: 0; padding: 0; }
     #map { height: 60vh; width: 100%; }
     button { padding: 12px 24px; font-size: 1.2em; margin: 10px; }
-    .result { font-size: 1.3em; margin: 10px; }
+    .result { font-size: 1.3em; margin: 10px; line-height: 1.6; }
+    ruby { font-size: 1.4em; }
+    rt { font-size: 0.6em; color: gray; }
   </style>
 </head>
 <body>
@@ -22,11 +24,13 @@
   <script>
     let cities = [];
 
+    // 地図初期化
     const map = L.map('map').setView([36.0, 138.0], 5);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
+    // 全国自治体データを取得
     fetch('https://code4fukui.github.io/localgovjp/localgovjp.json')
       .then(res => res.json())
       .then(data => {
@@ -40,8 +44,17 @@
 
     function draw() {
       if (!cities.length) return;
+
       const choice = cities[Math.floor(Math.random() * cities.length)];
-      document.getElementById('result').textContent = `選ばれた旅先：${choice.city}`;
+
+      // ルビ表示用HTML作成
+      const displayHTML = `<ruby>${choice.pref}<rt>${choice.pref_kana}</rt></ruby> ` +
+                          `<ruby>${choice.city}<rt>${choice.city_kana}</rt></ruby>`;
+
+      document.getElementById('result').innerHTML =
+        `選ばれた旅先：<br><strong>${displayHTML}</strong>`;
+
+      // 地図更新
       map.setView([choice.lat, choice.lng], 8);
       L.marker([choice.lat, choice.lng]).addTo(map);
     }
