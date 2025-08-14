@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>旅行先抽選マップ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 0; padding: 0; }
+    #map { height: 60vh; width: 100%; }
+    button { padding: 12px 24px; font-size: 1.2em; margin: 10px; }
+    .result { font-size: 1.3em; margin: 10px; }
+  </style>
+</head>
+<body>
+  <h1>旅行先 抽選マップ</h1>
+  <div id="map"></div>
+  <button onclick="draw()">旅先を決定！</button>
+  <div class="result" id="result">データ読み込み中...</div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    let cities = [];
+
+    const map = L.map('map').setView([36.0, 138.0], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    fetch('https://code4fukui.github.io/localgovjp/localgovjp.json')
+      .then(res => res.json())
+      .then(data => {
+        cities = data;
+        document.getElementById('result').textContent = "準備完了！ボタンを押して抽選";
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('result').textContent = "データ読み込みエラー";
+      });
+
+    function draw() {
+      if (!cities.length) return;
+      const choice = cities[Math.floor(Math.random() * cities.length)];
+      document.getElementById('result').textContent = `選ばれた旅先：${choice.city}`;
+      map.setView([choice.lat, choice.lng], 8);
+      L.marker([choice.lat, choice.lng]).addTo(map);
+    }
+  </script>
+</body>
+</html>
