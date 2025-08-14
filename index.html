@@ -48,8 +48,9 @@
       const choice = cities[Math.floor(Math.random() * cities.length)];
 
       // ルビ表示用HTML作成
-      const displayHTML = `<ruby>${choice.pref}<rt>${choice.pref_kana}</rt></ruby> ` +
-                          `<ruby>${choice.city}<rt>${choice.city_kana}</rt></ruby>`;
+      const displayHTML = `${choice.pref} ` + 
+                          `<ruby>${choice.city}<rt>${choice.citykana}</rt></ruby>`;
+
 
       document.getElementById('result').innerHTML =
         `選ばれた旅先：<br><strong>${displayHTML}</strong>`;
